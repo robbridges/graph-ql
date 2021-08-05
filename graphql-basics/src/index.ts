@@ -14,7 +14,7 @@ const users = [{
 }, {
   id: '3',
   name: 'Ryann',
-  email: "Shescute@example.com",
+  email: "Ryan@example.com",
   age: 21
 }];
 
@@ -39,11 +39,30 @@ const posts = [{
   author: '1'
 }]
 
+const comments = [{
+  id: '1',
+  textField: 'this was a great post',
+  author: '2'
+}, {
+  id: '2',
+  textField: 'Great work, this is interesting',
+  author: '1'
+}, {
+  id: '3',
+  textField: 'Wow! I can\'t believe this',
+  author: '2'
+}, {
+  id: '4',
+  textField: 'Great work man',
+  author: '3'
+}]
+
 //Type definitions
 const typeDefs = `
   type Query {
     users(query: String): [User!]!
     posts(query: String):[Post!]!
+    comments:[Comment!]!
     me: User!
     post: Post!
   }
@@ -53,12 +72,19 @@ const typeDefs = `
     name: String!
     email: String!
     age: Int
+    posts: [Post!]!
+    comments: [Comment!]!
   }
   type Post {
     id: ID!
     title: String!
     body: String!
     published: Boolean!
+    author: User!
+  }
+  type Comment {
+    id: ID!
+    textField: String!
     author: User!
   }
 `
@@ -82,6 +108,9 @@ const resolvers = {
         return (post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase()))
       })
     },
+    comments(parent, args, ctx, info) {
+      return comments;
+    },
     me() {
       return {
         id: '123098',
@@ -100,6 +129,25 @@ const resolvers = {
     }
   },
   Post: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author
+      })
+    }
+  },
+  User: {
+    posts(parent, args, ctx, info) {
+      return posts.filter((post)=> {
+        return post.author === parent.id
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comment) => {
+        return comment.author === parent.id
+      });
+    }
+  },
+  Comment: {
     author(parent, args, ctx, info) {
       return users.find((user) => {
         return user.id === parent.author
