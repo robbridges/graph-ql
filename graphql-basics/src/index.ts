@@ -42,19 +42,24 @@ const posts = [{
 const comments = [{
   id: '1',
   textField: 'this was a great post',
-  author: '2'
+  author: '2',
+  post: '1'
 }, {
   id: '2',
   textField: 'Great work, this is interesting',
-  author: '1'
+  author: '1',
+  post: '1'
+  
 }, {
   id: '3',
   textField: 'Wow! I can\'t believe this',
-  author: '2'
+  author: '2',
+  post: '2',
 }, {
   id: '4',
   textField: 'Great work man',
-  author: '3'
+  author: '3',
+  post: '3'
 }]
 
 //Type definitions
@@ -81,11 +86,13 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+    comments: [Comment!]!
   }
   type Comment {
     id: ID!
     textField: String!
     author: User!
+    post: Post!
   }
 `
 
@@ -125,6 +132,7 @@ const resolvers = {
         title: 'My first post',
         body: 'This is my first post',
         published: true,
+        
       }
     }
   },
@@ -132,6 +140,11 @@ const resolvers = {
     author(parent, args, ctx, info) {
       return users.find((user) => {
         return user.id === parent.author
+      })
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comments)=> {
+        return comments.post === parent.id;
       })
     }
   },
@@ -141,17 +154,18 @@ const resolvers = {
         return post.author === parent.id
       });
     },
-    comments(parent, args, ctx, info) {
-      return comments.filter((comment) => {
-        return comment.author === parent.id
-      });
-    }
+    
   },
   Comment: {
     author(parent, args, ctx, info) {
       return users.find((user) => {
         return user.id === parent.author
-      })
+      });
+    },
+    post(parent, args, ctx, info) {
+      return posts.find((post) => {
+        return post.id === parent.post
+      });
     }
   }
 }
