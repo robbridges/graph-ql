@@ -190,7 +190,8 @@ const resolvers = {
       users.push(user);
 
       return user;
-    }
+    },
+       
   }
 }
 
