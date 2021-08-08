@@ -75,6 +75,8 @@ const typeDefs = `
 
   type Mutation {
     createUser(name: String!, email: String!, age: Int): User!
+    createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
+    createComment(textField: String!, author: ID!, post: ID!): Comment!
   }
 
   type User {
@@ -191,6 +193,45 @@ const resolvers = {
 
       return user;
     },
+    createPost(parent, args, ctx, info) {
+      const userExists = users.some((user) => user.id === args.author);
+
+      if (!userExists) {
+        throw new Error('User does not exist');
+      }
+
+      const post = {
+        id: uuidv4(),
+        title: args.title,
+        body: args.body,
+        published: args.published,
+        author: args.author
+      }
+
+      posts.push(post);
+
+      return post;
+    },
+    createComment(parent, args, ctx, info) {
+      const userExists = users.some((user) => user.id === args.author);
+      const postExists = posts.some((post) => post.id === args.post && post.published );
+      
+
+      if (!userExists || !postExists) {
+        throw new Error('Either user or post cannot be found, bad request');
+      }
+      
+
+      const comment = {
+        id: uuidv4(),
+        textField: args.textField,
+        author: args.author,
+        post: args.post
+      }
+
+      comments.push(comment);
+      return comment;
+    }
        
   }
 }
@@ -201,5 +242,5 @@ const server = new GraphQLServer({
 });
 
 server.start(() => {
-  console.log('The server is up!');
+  console.log('The server is up!!');
 })
