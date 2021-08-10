@@ -77,7 +77,9 @@ const typeDefs = `
     createUser(data: CreateUserInput): User!
     deleteUser(id: ID!): User!
     createPost(data: CreatePostInput): Post!
+    deletePost(id: ID!): Post!
     createComment(data: CreateCommentInput): Comment!
+    deleteComment(id: ID!): Comment!
   }
 
   input CreateUserInput {
@@ -257,6 +259,22 @@ const resolvers = {
 
       return post;
     },
+    deletePost(parent, args, ctx, info) {
+      const postIndex = posts.findIndex((post) => post.id === args.id );
+
+      if (postIndex === -1) {
+        throw new Error('Post does not exist');
+      }
+
+      const deletedPost = posts.splice(postIndex, 1);
+
+      comments = comments.filter((comment) => comment.post !== args.id)
+
+      return deletedPost[0];
+
+
+
+    },
     createComment(parent, args, ctx, info) {
       const userExists = users.some((user) => user.id === args.data.author);
       const postExists = posts.some((post) => post.id === args.data.post && post.published );
@@ -274,7 +292,16 @@ const resolvers = {
 
       comments.push(comment);
       return comment;
-    }
+    },
+    deleteComment(parent, args, ctx, info) {
+      const commentIndex = comments.findIndex((comment) => comment.id === args.id);
+      
+      const deletedComment = comments.splice(commentIndex, 1);
+
+      comments = comments.filter((comment) => comment.id !== args.id)
+
+      return deletedComment[0];
+    },
        
   }
 }
