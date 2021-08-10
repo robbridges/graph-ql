@@ -9,15 +9,24 @@
   type Mutation {
     createUser(data: CreateUserInput): User!
     deleteUser(id: ID!): User!
+    updateUser(id: ID!, data: UpdateUserInput): User!
     createPost(data: CreatePostInput): Post!
     deletePost(id: ID!): Post!
+    updatePost(id: ID!, data: UpdatePostInput): Post!
     createComment(data: CreateCommentInput): Comment!
     deleteComment(id: ID!): Comment!
+    updateComment(id: ID!, data: updateCommentInput): Comment!
   }
 
   input CreateUserInput {
     name: String!
     email: String!
+    age: Int
+  }
+
+  input UpdateUserInput {
+    name: String
+    email: String
     age: Int
   }
 
@@ -27,11 +36,20 @@
     published: Boolean!
     author: ID!
   }
+  input UpdatePostInput {
+    title: String
+    body: String
+    published: Boolean
+  }
 
   input CreateCommentInput {
     textField: String!
     author: ID!
     post: ID!
+  }
+  "While it may seem strange to create an input for just one value, instead of passing it directly it's probably better to keep with conventions"
+  input updateCommentInput {
+    textField: String
   }
 
   

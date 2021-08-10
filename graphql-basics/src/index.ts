@@ -7,10 +7,6 @@ import Comment from './resolvers/Comment';
 
 import db from './db';
 
-//Resolvers
-const resolvers = {
-
-}
 
 const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
